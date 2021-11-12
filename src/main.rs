@@ -25,14 +25,15 @@ struct Config {
 
 fn main() {
     let config = Config::from_args();
-    println!("{:#?}", config);
+    if config.verbose {
+        println!("{:#?}", config);
+    }
 
     // Check the bounds of the bit depth
     if config.depth == 0 {
         println!("Specified bit depth cannot be zero");
         exit(1);
-    }
-    if config.depth > 32 {
+    } else if config.depth > 32 {
         println!(
             "Specified bit depth of {} exceeds supported maximum of 32",
             config.depth
@@ -40,12 +41,13 @@ fn main() {
         exit(2);
     }
 
-    // Calculate half of the maximum sample value
+    // Calculate the maximum sample value
     let max = (2_u64.pow(config.depth as u32) - 1) as f64;
     if config.verbose {
         println!("Max sample value: {}", max);
     }
 
+    // Perform calculation for each sample point
     for i in 0..config.samples {
         let x = i as f64 / config.samples as f64;
         let sin = (x * 2_f64 * PI).sin();
